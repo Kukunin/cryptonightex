@@ -41,7 +41,8 @@ defmodule CryptoNightex.Mixfile do
   end
 
   defp deps do
-    [{:poolboy, "~> 1.5.1"}]
+    [{:poolboy, "~> 1.5.1"},
+     {:ex_doc, ">= 0.0.0", only: :dev}]
   end
 
   defp package do
