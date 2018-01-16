@@ -17,6 +17,14 @@ defmodule CryptoNightex.Server do
   end
   def calculate(_, input, _), do: raise ArgumentError, "Wrong input #{inspect(input)}"
 
+  def executable_path do
+    [
+      :code.priv_dir(:cryptonightex),
+      :erlang.system_info(:system_architecture),
+      "cryptonight_port"
+    ] |> :filename.join()
+  end
+
   def init(:ok) do
     port = Port.open({:spawn, executable_path()}, [:binary, :exit_status])
     {:ok, %{port: port}}
@@ -42,9 +50,5 @@ defmodule CryptoNightex.Server do
   def handle_info(info, state) do
     Logger.warn("Unknown request #{inspect(info)}")
     {:noreply, state}
-  end
-
-  defp executable_path do
-    Mix.Tasks.Compile.NativeCode.executable_path()
   end
 end

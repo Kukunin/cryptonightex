@@ -1,17 +1,9 @@
 defmodule Mix.Tasks.Compile.NativeCode do
   def run(_args) do
-    env = [{"TARGET", executable_path()}]
+    env = [{"TARGET", CryptoNightex.Server.executable_path()}]
     {result, errcode} = System.cmd("make", [], env: env, stderr_to_stdout: true)
     IO.binwrite(result)
     unless errcode == 0, do: raise "Compilation failed"
-  end
-
-  def executable_path do
-    [
-      :code.priv_dir(:cryptonightex),
-      :erlang.system_info(:system_architecture),
-      "cryptonight_port"
-    ] |> :filename.join()
   end
 end
 
@@ -21,7 +13,7 @@ defmodule CryptoNightex.Mixfile do
   def project do
     [
       app: :cryptonightex,
-      version: "0.1.1",
+      version: "0.1.2",
       description: "CryptoNight native library for Elixir/Erlang",
       elixir: "~> 1.5",
       compilers: Mix.compilers ++ [:native_code],
