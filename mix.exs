@@ -22,10 +22,13 @@ defmodule CryptoNightex.Mixfile do
     [
       app: :cryptonightex,
       version: "0.1.0",
+      description: "CryptoNight native library for Elixir/Erlang",
       elixir: "~> 1.5",
       compilers: [:native_code] ++ Mix.compilers,
       start_permanent: Mix.env == :prod,
-      deps: deps()
+      deps: deps(),
+      package: package(),
+      source_url: "https://github.com/Kukunin/cryptonightex",
     ]
   end
 
@@ -39,5 +42,15 @@ defmodule CryptoNightex.Mixfile do
 
   defp deps do
     [{:poolboy, "~> 1.5.1"}]
+  end
+
+  defp package do
+    [
+      files: ~w(lib mix.exs README.md),
+      maintainers: ["Sergiy Kukunin"],
+      licenses: ["MIT"],
+      files: ["src", "lib", "mix.exs", "Makefile", "LICENSE*", "README*"],
+      links: %{"github" => "https://github.com/Kukunin/cryptonightex"}
+    ]
   end
 end
