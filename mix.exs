@@ -21,10 +21,10 @@ defmodule CryptoNightex.Mixfile do
   def project do
     [
       app: :cryptonightex,
-      version: "0.1.0",
+      version: "0.1.1",
       description: "CryptoNight native library for Elixir/Erlang",
       elixir: "~> 1.5",
-      compilers: [:native_code] ++ Mix.compilers,
+      compilers: Mix.compilers ++ [:native_code],
       start_permanent: Mix.env == :prod,
       deps: deps(),
       package: package(),
