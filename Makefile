@@ -2,7 +2,7 @@ ARCH := $(shell erl -eval 'io:format("~s~n", [lists:concat([erlang:system_info(s
 
 C = gcc
 CPP = g++
-CFLAGS = -o3 -Wall -fPIC -maes -Isrc -Isrc/3rdparty -Isrc/overrides
+CFLAGS = -o3 -Wall -fPIC -maes -Isrc
 CPPFLAGS = $(CFLAGS) -std=c++11
 
 BUILD_FOLDER = priv/native/$(ARCH)

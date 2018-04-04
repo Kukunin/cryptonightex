@@ -39,11 +39,11 @@ bool hex2bin(unsigned char *p, const char *hexstr, size_t len)
   return (len == 0 && *hexstr == 0) ? true : false;
 }
 
-static void cryptonight_av1_aesni(const void *input, size_t size, void *output, struct cryptonight_ctx *ctx) {
-  cryptonight_hash<0x80000, MEMORY, 0x1FFFF0, false>(input, size, output, ctx);
+static void cryptonight_av1_aesni(const uint8_t *input, size_t size, uint8_t *output, struct cryptonight_ctx *ctx) {
+  cryptonight_single_hash<MONERO_ITER, MONERO_MEMORY, MONERO_MASK, false, 0>(input, size, output, ctx);
 }
 
-void (*cryptonight_hash_ctx)(const void *input, size_t size, void *output, cryptonight_ctx *ctx) = cryptonight_av1_aesni;
+void (*cryptonight_hash_ctx)(const uint8_t *input, size_t size, uint8_t *output, cryptonight_ctx *ctx) = cryptonight_av1_aesni;
 
 #define INPUT_SIZE 76
 #define INPUT_HEX_SIZE INPUT_SIZE * 2
@@ -62,8 +62,8 @@ int main(void) {
   unsigned char output[OUTPUT_SIZE];
   char output_hex[OUTPUT_HEX_SIZE + 1];
 
-  struct cryptonight_ctx *ctx = (struct cryptonight_ctx*) _mm_malloc(sizeof(struct cryptonight_ctx), 16);
-  ctx->memory = (uint8_t *) _mm_malloc(MEMORY * 2, 16);
+  struct cryptonight_ctx *ctx = static_cast<cryptonight_ctx *>(_mm_malloc(sizeof(cryptonight_ctx), 16));
+  ctx->memory = (uint8_t *) _mm_malloc(MONERO_MEMORY * 2, 16);
 
   while((bytes_read = read(STDIN, input_hex, INPUT_HEX_SIZE))) {
     if (bytes_read != INPUT_HEX_SIZE) {

@@ -4,6 +4,7 @@ defmodule Mix.Tasks.Compile.NativeCode do
     {result, errcode} = System.cmd("make", [], env: env, stderr_to_stdout: true)
     IO.binwrite(result)
     unless errcode == 0, do: raise "Compilation failed"
+    :ok
   end
 end
 
