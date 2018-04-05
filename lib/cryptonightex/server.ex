@@ -31,7 +31,7 @@ defmodule CryptoNightex.Server do
   end
 
   def handle_call({:calc, input, timeout}, _from, %{port: port} = state) do
-    Port.command(port, input)
+    Port.command(port, port_payload(input))
     result = receive do
       {^port, {:data, value}} -> {:ok, value}
       {^port, {:exit_status, status}} = message ->
@@ -50,5 +50,9 @@ defmodule CryptoNightex.Server do
   def handle_info(info, state) do
     Logger.warn("Unknown request #{inspect(info)}")
     {:noreply, state}
+  end
+
+  defp port_payload(input) do
+    <<0>> <> input
   end
 end
