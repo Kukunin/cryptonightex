@@ -39,11 +39,18 @@ bool hex2bin(unsigned char *p, const char *hexstr, size_t len)
   return (len == 0 && *hexstr == 0) ? true : false;
 }
 
-static void cryptonight_av1_aesni(const uint8_t *input, size_t size, uint8_t *output, struct cryptonight_ctx *ctx) {
+static void cryptonight_v1_hash(const uint8_t *input, size_t size, uint8_t *output, struct cryptonight_ctx *ctx) {
   cryptonight_single_hash<MONERO_ITER, MONERO_MEMORY, MONERO_MASK, false, 0>(input, size, output, ctx);
 }
 
-void (*cryptonight_hash_ctx)(const uint8_t *input, size_t size, uint8_t *output, cryptonight_ctx *ctx) = cryptonight_av1_aesni;
+static void cryptonight_v7_hash(const uint8_t *input, size_t size, uint8_t *output, struct cryptonight_ctx *ctx) {
+  cryptonight_single_hash<MONERO_ITER, MONERO_MEMORY, MONERO_MASK, false, 1>(input, size, output, ctx);
+}
+
+void (*cryptonight_variations[2])(const uint8_t *input, size_t size, uint8_t *output, cryptonight_ctx *ctx) = {
+  cryptonight_v1_hash,
+  cryptonight_v7_hash
+};
 
 #define INPUT_SIZE 76
 #define INPUT_HEX_SIZE INPUT_SIZE * 2
@@ -60,7 +67,7 @@ int main(void) {
   int bytes_read;
   unsigned char payload[PAYLOAD_SIZE + 1];
   unsigned char* input_hex = payload + MODE_SIZE;
-  payload[PAYLOAD_SIZE] = '\0';
+  input_hex[INPUT_HEX_SIZE] = '\0';
 
   unsigned char input[INPUT_SIZE];
   unsigned char output[OUTPUT_SIZE];
@@ -87,7 +94,7 @@ int main(void) {
       return 3;
     }
 
-    cryptonight_hash_ctx(input, INPUT_SIZE, output, ctx);
+    cryptonight_variations[mode](input, INPUT_SIZE, output, ctx);
 
     bin2hex(output_hex, output, OUTPUT_SIZE);
     write(STDOUT, output_hex, OUTPUT_HEX_SIZE);

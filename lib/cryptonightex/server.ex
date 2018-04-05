@@ -7,15 +7,27 @@ defmodule CryptoNightex.Server do
     GenServer.start_link(__MODULE__, :ok, opts)
   end
 
-  def calculate(pid, input, timeout \\ :infinity)
-  def calculate(pid, input, timeout)
+  def calculate(pid, input, timeout \\ :infinity) do
+    calculate_(pid, input, :auto, timeout)
+  end
+
+  def cryptonight(pid, input, timeout \\ :infinity) do
+    calculate_(pid, input, :cryptonight, timeout)
+  end
+
+  def cryptonightV7(pid, input, timeout \\ :infinity) do
+    calculate_(pid, input, :cryptonightV7, timeout)
+  end
+
+  def calculate_(pid, input, mode, timeout \\ :infinity)
+  def calculate_(pid, input, mode, timeout)
   when is_binary(input) and byte_size(input) == 152 do
     case input |> String.upcase |> Base.decode16 do
-      {:ok, _} -> GenServer.call(pid, {:calc, input |> String.downcase, timeout})
+      {:ok, _} -> GenServer.call(pid, {:cryptonight, mode, input |> String.downcase, timeout})
       :error -> raise ArgumentError, "Wrong input #{inspect(input)}"
     end
   end
-  def calculate(_, input, _), do: raise ArgumentError, "Wrong input #{inspect(input)}"
+  def calculate_(_, input, _, _), do: raise ArgumentError, "Wrong input #{inspect(input)}"
 
   def executable_path do
     [
@@ -30,8 +42,8 @@ defmodule CryptoNightex.Server do
     {:ok, %{port: port}}
   end
 
-  def handle_call({:calc, input, timeout}, _from, %{port: port} = state) do
-    Port.command(port, port_payload(input))
+  def handle_call({:cryptonight, mode, input, timeout}, _from, %{port: port} = state) do
+    Port.command(port, port_payload(mode, input))
     result = receive do
       {^port, {:data, value}} -> {:ok, value}
       {^port, {:exit_status, status}} = message ->
@@ -52,7 +64,11 @@ defmodule CryptoNightex.Server do
     {:noreply, state}
   end
 
-  defp port_payload(input) do
-    <<0>> <> input
+  defp port_payload(mode, input) do
+    mode_byte(mode) <> input
   end
+
+  defp mode_byte(:auto), do: mode_byte(:cryptonight)
+  defp mode_byte(:cryptonight), do: <<0>>
+  defp mode_byte(:cryptonightV7), do: <<1>>
 end

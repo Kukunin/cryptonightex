@@ -10,12 +10,42 @@ defmodule CryptoNightex do
   """
 
   @doc """
-  Calculates a CryptoNight hash
+  Calculates a CryptoNight V1 hash
 
   ## Examples
 
-      iex> CryptoNightex.calculate "0606fac496d005813051e5ad9760865270e9b3da278691fe0faec207a67f7d15d812b04e9e8a4d7e0200003bfb6ed357c8955111594374493de1b2f38e97363744e2ae4e1c49ce181c29c60c"
-      {:ok, "7963869b4385a2df066debe120081206bd7e7656798b977061d7b0335cef8100"}
+  iex> CryptoNightex.cryptonight "0606fac496d005813051e5ad9760865270e9b3da278691fe0faec207a67f7d15d812b04e9e8a4d7e0200003bfb6ed357c8955111594374493de1b2f38e97363744e2ae4e1c49ce181c29c60c"
+  {:ok, "7963869b4385a2df066debe120081206bd7e7656798b977061d7b0335cef8100"}
+
+  """
+  def cryptonight(blob) do
+    :poolboy.transaction(:cryptonightex_port, fn server ->
+      CryptoNightex.Server.cryptonight(server, blob)
+    end, @timeout)
+  end
+
+  @doc """
+  Calculates a CryptoNight V7 hash
+
+  ## Examples
+
+  iex> CryptoNightex.cryptonightV7 "0606fac496d005813051e5ad9760865270e9b3da278691fe0faec207a67f7d15d812b04e9e8a4d7e0200003bfb6ed357c8955111594374493de1b2f38e97363744e2ae4e1c49ce181c29c60c"
+  {:ok, "40e789e43bbc91ca3c7d5e45e905466ff52a625203b7201f9f6b3d741804ef9b"}
+
+  """
+  def cryptonightV7(blob) do
+    :poolboy.transaction(:cryptonightex_port, fn server ->
+      CryptoNightex.Server.cryptonightV7(server, blob)
+    end, @timeout)
+  end
+
+  @doc """
+  Calculates a cryptonight hash, detecting the variation automatically
+
+  ## Examples
+
+  iex> CryptoNightex.calculate "0606fac496d005813051e5ad9760865270e9b3da278691fe0faec207a67f7d15d812b04e9e8a4d7e0200003bfb6ed357c8955111594374493de1b2f38e97363744e2ae4e1c49ce181c29c60c"
+  {:ok, "7963869b4385a2df066debe120081206bd7e7656798b977061d7b0335cef8100"}
 
   """
   def calculate(blob) do
