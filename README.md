@@ -10,7 +10,7 @@ to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:cryptonightex, "~> 0.1.0"}
+    {:cryptonightex, "~> 0.2"}
   ]
 end
 ```

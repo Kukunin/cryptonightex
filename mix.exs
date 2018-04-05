@@ -14,7 +14,7 @@ defmodule CryptoNightex.Mixfile do
   def project do
     [
       app: :cryptonightex,
-      version: "0.1.2",
+      version: "0.2.0",
       description: "CryptoNight native library for Elixir/Erlang",
       elixir: "~> 1.5",
       compilers: Mix.compilers ++ [:native_code],
