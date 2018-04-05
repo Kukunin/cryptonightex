@@ -42,10 +42,17 @@ defmodule CryptoNightex do
   @doc """
   Calculates a cryptonight hash, detecting the variation automatically
 
+  It takes first byte of an input as a cryptonight version.
+
   ## Examples
 
   iex> CryptoNightex.calculate "0606fac496d005813051e5ad9760865270e9b3da278691fe0faec207a67f7d15d812b04e9e8a4d7e0200003bfb6ed357c8955111594374493de1b2f38e97363744e2ae4e1c49ce181c29c60c"
   {:ok, "7963869b4385a2df066debe120081206bd7e7656798b977061d7b0335cef8100"}
+
+  If a blob is version 7 or more, it calculates CryptonightV7
+
+  iex> CryptoNightex.calculate "0706fac496d005813051e5ad9760865270e9b3da278691fe0faec207a67f7d15d812b04e9e8a4d7e0200003bfb6ed357c8955111594374493de1b2f38e97363744e2ae4e1c49ce181c29c60c"
+  {:ok, "c28d6263984ddbf1fd8953ac2bf37fe9d7d6806aaafd17f768e9327dcba1504e"}
 
   """
   def calculate(blob) do

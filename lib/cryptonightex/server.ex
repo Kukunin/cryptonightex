@@ -65,10 +65,13 @@ defmodule CryptoNightex.Server do
   end
 
   defp port_payload(mode, input) do
-    mode_byte(mode) <> input
+    mode_byte(mode, input) <> input
   end
 
-  defp mode_byte(:auto), do: mode_byte(:cryptonight)
-  defp mode_byte(:cryptonight), do: <<0>>
-  defp mode_byte(:cryptonightV7), do: <<1>>
+  defp mode_byte(:auto, input) do
+    <<version>> = input |> String.slice(0, 2) |> String.upcase |> Base.decode16!
+    (if version < 7, do: :cryptonight, else: :cryptonightV7) |> mode_byte(input)
+  end
+  defp mode_byte(:cryptonight, _), do: <<0>>
+  defp mode_byte(:cryptonightV7, _), do: <<1>>
 end
